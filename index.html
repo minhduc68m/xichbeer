@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Xích Beer — Menu</title>
+<template id="__bundler_thumbnail" data-bg-color="#151210">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#151210"/>
+    <circle cx="470" cy="330" r="90" fill="none" stroke="#C9973A" stroke-width="14"/>
+    <circle cx="640" cy="330" r="90" fill="none" stroke="#C9973A" stroke-width="14"/>
+    <circle cx="555" cy="470" r="90" fill="none" stroke="#C9973A" stroke-width="14"/>
+    <text x="600" y="640" font-family="Georgia, serif" font-size="72" fill="#F2ECE2" text-anchor="middle" letter-spacing="4">XÍCH BEER</text>
+  </svg>
+</template>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background:#151210; color:#F2ECE2; font-family:'Barlow',sans-serif; }
+  a { text-decoration: none; color:#C9973A; }
+  a:hover { color:#EAC475; }
+
+  header { position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:center;
+    padding:16px clamp(16px,4vw,48px); background:rgba(17,14,12,0.92); backdrop-filter:blur(6px);
+    border-bottom:1px solid rgba(201,154,75,0.28); flex-wrap:wrap; }
+  nav { display:flex; gap:clamp(16px,3vw,36px); flex-wrap:wrap; justify-content:center; }
+  nav button { font-family:'Oswald',sans-serif; font-weight:600; font-size:15px; letter-spacing:0.08em;
+    text-transform:uppercase; color:#F2ECE2; padding:6px 2px; border:none; background:none; cursor:pointer;
+    border-bottom:2px solid transparent; transition:color .2s, border-color .2s; }
+  nav button:hover { color:#C9973A; border-bottom-color:#C9973A; }
+  nav button.active { color:#C9973A; border-bottom-color:#C9973A; }
+
+  .hero { position:relative; padding:clamp(48px,8vw,96px) clamp(16px,5vw,48px) clamp(40px,6vw,72px); text-align:center;
+    background:repeating-linear-gradient(135deg, rgba(201,154,75,0.05) 0px, rgba(201,154,75,0.05) 2px, transparent 2px, transparent 26px); }
+  .hero .eyebrow { font-family:'Oswald',sans-serif; letter-spacing:0.25em; text-transform:uppercase; color:#C9973A; font-size:clamp(11px,1.6vw,13px); margin-bottom:14px; }
+  .hero h1 { font-family:'Oswald',sans-serif; font-weight:700; font-size:clamp(34px,7vw,64px); margin:0 0 16px; letter-spacing:0.02em; }
+  .hero h1 span { color:#C9973A; }
+  .hero p { max-width:640px; margin:0 auto; color:#C9C2B6; font-size:clamp(15px,2vw,18px); line-height:1.6; }
+
+  .cat-section { padding:clamp(40px,7vw,72px) clamp(16px,5vw,48px); border-top:1px solid rgba(201,154,75,0.2); display:none; }
+  .cat-section.active { display:block; }
+  .cat-section.tint { background:rgba(201,154,75,0.03); }
+  .cat-head { text-align:center; margin-bottom:clamp(24px,4vw,40px); }
+  .cat-head .eyebrow { font-family:'Oswald',sans-serif; letter-spacing:0.22em; text-transform:uppercase; color:#C9973A; font-size:12px; margin-bottom:8px; }
+  .cat-head h2 { font-family:'Oswald',sans-serif; font-weight:700; font-size:clamp(26px,4.5vw,40px); margin:0; }
+  .cat-head .rule { width:56px; height:3px; background:#C9973A; margin:16px auto 0; }
+
+  .viewer { position:relative; max-width:640px; margin:0 auto; }
+  .viewer .frame { overflow:hidden; border-radius:6px; box-shadow:0 12px 40px rgba(0,0,0,0.55);
+    border:1px solid rgba(201,154,75,0.25); perspective:1400px; }
+  .viewer img { display:block; width:100%; cursor:zoom-in; backface-visibility:hidden;
+    transition:transform .32s ease, filter .32s ease; transform:rotateY(0deg); filter:brightness(1); }
+  .viewer .navbtn { position:absolute; top:50%; transform:translateY(-50%); width:clamp(40px,8vw,48px); height:clamp(40px,8vw,48px);
+    border-radius:999px; border:1px solid rgba(201,154,75,0.5); background:rgba(20,17,14,0.85); color:#C9973A;
+    font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .2s, color .2s; }
+  .viewer .navbtn:hover { background:#C9973A; color:#151210; }
+  .viewer .navbtn.prev { left:clamp(-8px,-3vw,-24px); }
+  .viewer .navbtn.next { right:clamp(-8px,-3vw,-24px); }
+  .pagepos { text-align:center; margin-top:16px; font-family:'Oswald',sans-serif; letter-spacing:0.1em; color:#C9C2B6; font-size:13px; }
+
+  footer { background:#0F0D0B; border-top:1px solid rgba(201,154,75,0.28); padding:clamp(40px,6vw,64px) clamp(16px,5vw,48px) 24px; }
+  .foot-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:32px; max-width:1100px; margin:0 auto; }
+  .foot-grid h3 { font-family:'Oswald',sans-serif; letter-spacing:0.15em; text-transform:uppercase; color:#C9973A; font-size:12px; margin:0 0 10px; }
+  .foot-grid p { color:#D8D2C6; font-size:14px; line-height:1.6; margin:0 0 8px; }
+  .foot-bottom { max-width:1100px; margin:32px auto 0; padding-top:16px; border-top:1px solid rgba(201,154,75,0.15); text-align:center; color:#6E675C; font-size:12px; }
+
+  .lightbox { position:fixed; inset:0; background:rgba(8,6,5,0.94); z-index:100; display:none; align-items:center; justify-content:center; padding:24px; cursor:zoom-out; }
+  .lightbox.open { display:flex; }
+  .lightbox .lbframe { position:relative; width:min(95vw,900px); height:92vh; overflow:hidden; border-radius:4px; box-shadow:0 20px 60px rgba(0,0,0,0.6); cursor:zoom-in; }
+  .lightbox .lbframe img { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; transform:scale(2.2); transition:transform-origin .15s ease; }
+  .lightbox .close { position:absolute; top:20px; right:24px; width:44px; height:44px; border-radius:999px; border:1px solid rgba(201,154,75,0.5);
+    background:rgba(20,17,14,0.85); color:#C9973A; font-size:22px; cursor:pointer; z-index:1; }
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <button data-cat="doan" class="active">Đồ Ăn</button>
+    <button data-cat="douong">Đồ Uống</button>
+    <button data-cat="combo">Combo</button>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="eyebrow">Quán Bia Industrial</div>
+  <h1>XÍCH <span>BEER</span></h1>
+  <p>Tận hưởng cuộc vui bùng nổ tại Xích Beer: "Nơi hội tụ thế giới bia đa dạng, thực đơn phong phú đậm vị, cùng phong cách phục vụ nhiệt tình, chu đáo trong không gian Industrial đầy cá tính"</p>
+</section>
+
+<main>
+  <section class="cat-section active" data-cat="doan">
+    <div class="cat-head"><div class="eyebrow">Menu</div><h2>Đồ Ăn</h2><div class="rule"></div></div>
+    <div class="viewer" data-viewer="doan">
+      <div class="frame"><img data-img alt="Menu Đồ Ăn"></div>
+      <button class="navbtn prev" data-prev aria-label="Trang trước">‹</button>
+      <button class="navbtn next" data-next aria-label="Trang sau">›</button>
+    </div>
+    <div class="pagepos" data-pos></div>
+  </section>
+
+  <section class="cat-section tint" data-cat="douong">
+    <div class="cat-head"><div class="eyebrow">Menu</div><h2>Đồ Uống</h2><div class="rule"></div></div>
+    <div class="viewer" data-viewer="douong">
+      <div class="frame"><img data-img alt="Menu Đồ Uống"></div>
+      <button class="navbtn prev" data-prev aria-label="Trang trước">‹</button>
+      <button class="navbtn next" data-next aria-label="Trang sau">›</button>
+    </div>
+    <div class="pagepos" data-pos></div>
+  </section>
+
+  <section class="cat-section" data-cat="combo">
+    <div class="cat-head"><div class="eyebrow">Menu</div><h2>Combo</h2><div class="rule"></div></div>
+    <div class="viewer" data-viewer="combo">
+      <div class="frame"><img data-img alt="Menu Combo"></div>
+      <button class="navbtn prev" data-prev aria-label="Trang trước">‹</button>
+      <button class="navbtn next" data-next aria-label="Trang sau">›</button>
+    </div>
+    <div class="pagepos" data-pos></div>
+  </section>
+</main>
+
+<footer>
+  <div class="foot-grid">
+    <div>
+      <div style="font-family:'Oswald',sans-serif; font-weight:700; font-size:20px; margin-bottom:6px;">XÍCH <span style="color:#C9973A;">BEER</span></div>
+      <p style="max-width:280px;">Bia thủ công, không gian industrial giữa lòng Hà Nội.</p>
+    </div>
+    <div>
+      <h3>Địa chỉ</h3>
+      <p>68 P. Nguyên Hồng, Láng, Hà Nội, Việt Nam</p>
+      <a href="https://www.google.com/maps/search/?api=1&query=68%20P.%20Nguy%C3%AAn%20H%E1%BB%93ng%2C%20L%C3%A1ng%2C%20H%C3%A0%20N%E1%BB%99i%2C%20Vi%E1%BB%87t%20Nam" target="_blank">Xem bản đồ →</a>
+    </div>
+    <div>
+      <h3>Giờ mở cửa</h3>
+      <p>10:00 - 23:30 hàng ngày</p>
+    </div>
+    <div>
+      <h3>Liên hệ</h3>
+      <p><a href="tel:02462722888">024 6272 2888</a></p>
+    </div>
+  </div>
+  <div class="foot-bottom">© 2026 Xích Beer. All rights reserved.</div>
+</footer>
+
+<div class="lightbox" id="lightbox">
+  <div class="lbframe" id="lbframe"><img id="lbimg" alt="Xem lớn"></div>
+  <button class="close" id="lbclose" aria-label="Đóng">×</button>
+</div>
+
+<script>
+  // GitHub repo this site is deployed from — the menu folders are read live from here,
+  // so uploading a new image to the folder makes it appear automatically (no code edit needed).
+  const GH_OWNER = 'minhduc68m';
+  const GH_REPO = 'xichbeer';
+  const GH_BRANCH = 'main';
+
+  const CATS = {
+    doan: { path: 'uploads/DoAn', prefix: 'uploads/DoAn/', files: ['01A_KhaiVi1.png','01B_KhaiVi2.png','02A_KhaiVi3.png','02B_Salad_Rau1.png','03A_Salad_Rau2.png','03B_Salad_Rau3.png','04A_Bo_Be1.png','04B_Bo_Be2.png','05A_Heo_Ga1.png','05B_Heo_Ga2.png','06A_Heo_Ga3.png','06B_HaiSan1.png','07A_HaiSan2.png','07B_HaiSan3.png','08A_HaiSan4.png','08B_ComLau.png','09A_menu_moi_1A.png','09B_menu_moi_1B.png','10A_menu_moi_2A.png','10B_menu_moi_2B.png'] },
+    douong: { path: 'uploads/DoUong', prefix: 'uploads/DoUong/', files: ['MenuBeer_1.png','MenuBeer_2.png'] },
+    combo: { path: 'uploads/Combo', prefix: 'uploads/Combo/', files: ['Combo_1.png','Combo_2.png'] }
+  };
+  Object.values(CATS).forEach(c => c.idx = 0);
+  const IMG_EXT = /\.(png|jpe?g|webp|gif)$/i;
+
+  function renderCat(key) {
+    const c = CATS[key];
+    const viewer = document.querySelector('.viewer[data-viewer="' + key + '"]');
+    const img = viewer.querySelector('[data-img]');
+    const section = document.querySelector('.cat-section[data-cat="' + key + '"]');
+    if (!c.files.length) return;
+    img.src = c.prefix + c.files[c.idx];
+    section.querySelector('[data-pos]').textContent = 'Trang ' + (c.idx + 1) + ' / ' + c.files.length;
+  }
+
+  function flip(key, delta) {
+    const c = CATS[key];
+    if (c.files.length < 2) return;
+    const viewer = document.querySelector('.viewer[data-viewer="' + key + '"]');
+    const img = viewer.querySelector('[data-img]');
+    img.style.transformOrigin = delta > 0 ? '0% 50%' : '100% 50%';
+    img.style.transform = 'rotateY(' + (-delta * 100) + 'deg)';
+    img.style.filter = 'brightness(0.55)';
+    setTimeout(() => {
+      c.idx = (c.idx + delta + c.files.length) % c.files.length;
+      renderCat(key);
+      img.style.transformOrigin = delta > 0 ? '100% 50%' : '0% 50%';
+      img.style.transform = 'rotateY(' + (delta * 100) + 'deg)';
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        img.style.transformOrigin = '50% 50%';
+        img.style.transform = 'rotateY(0deg)';
+        img.style.filter = 'brightness(1)';
+      }));
+    }, 200);
+  }
+
+  document.querySelectorAll('.viewer').forEach(v => {
+    const key = v.dataset.viewer;
+    v.querySelector('[data-prev]').addEventListener('click', () => flip(key, -1));
+    v.querySelector('[data-next]').addEventListener('click', () => flip(key, 1));
+    v.querySelector('[data-img]').addEventListener('click', (e) => openZoom(e, e.currentTarget.src));
+  });
+
+  document.querySelectorAll('nav button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const cat = btn.dataset.cat;
+      document.querySelectorAll('nav button').forEach(b => b.classList.toggle('active', b === btn));
+      document.querySelectorAll('.cat-section').forEach(s => s.classList.toggle('active', s.dataset.cat === cat));
+    });
+  });
+
+  const lightbox = document.getElementById('lightbox');
+  const lbframe = document.getElementById('lbframe');
+  const lbimg = document.getElementById('lbimg');
+
+  function pointFromEvent(e) {
+    const rect = e.currentTarget.getBoundingClientRect();
+    return {
+      x: Math.max(0, Math.min(100, (e.clientX - rect.left) / rect.width * 100)),
+      y: Math.max(0, Math.min(100, (e.clientY - rect.top) / rect.height * 100))
+    };
+  }
+  function openZoom(e, src) {
+    const p = pointFromEvent(e);
+    lbimg.src = src;
+    lbimg.style.transformOrigin = p.x + '% ' + p.y + '%';
+    lightbox.classList.add('open');
+  }
+  lbframe.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const p = pointFromEvent(e);
+    lbimg.style.transformOrigin = p.x + '% ' + p.y + '%';
+  });
+  lightbox.addEventListener('click', () => lightbox.classList.remove('open'));
+  document.getElementById('lbclose').addEventListener('click', () => lightbox.classList.remove('open'));
+
+  Object.keys(CATS).forEach(renderCat);
+
+  // Live-refresh each folder's file list straight from GitHub so new uploads show up automatically.
+  async function refreshFromGitHub(key) {
+    const c = CATS[key];
+    try {
+      const res = await fetch('https://api.github.com/repos/' + GH_OWNER + '/' + GH_REPO + '/contents/' + c.path + '?ref=' + GH_BRANCH);
+      if (!res.ok) return;
+      const data = await res.json();
+      if (!Array.isArray(data)) return;
+      const names = data.filter(f => f.type === 'file' && IMG_EXT.test(f.name)).map(f => f.name).sort();
+      if (names.length) {
+        c.files = names;
+        c.idx = 0;
+        renderCat(key);
+      }
+    } catch (e) { /* offline or rate-limited: keep the built-in list */ }
+  }
+  Object.keys(CATS).forEach(refreshFromGitHub);
+</script>
+</body>
+</html>
