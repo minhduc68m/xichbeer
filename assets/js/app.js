@@ -232,9 +232,78 @@
   var lbClose = $('#lbClose');
   var lastFocus = null;
 
-  function showAt(i) {
+  /* ─── Hiệu ứng lật trang ─────────────────────────────────
+     Gáy sách ở mép trái. Tiến tới: trang hiện tại lật ra ngoài để
+     lộ trang sau. Lùi lại: trang trước lật ngược vào, đè lên trên.
+     Thời lượng lệch nhau có chủ đích — đi ra nhanh hơn đi vào. */
+  var lbFlip = $('#lbFlip');
+  var flipAnim = null;
+
+  function resetFlip() {
+    if (flipAnim) { flipAnim.cancel(); flipAnim = null; }
+    lbFlip.classList.remove('is-on');
+    lbFlip.removeAttribute('src');
+    lbFlip.style.cssText = '';
+    lbImg.style.zIndex = '';
+    lbImg.style.transform = '';
+    lbImg.style.transformOrigin = '';
+    lbImg.style.filter = '';
+    lbImg.style.transition = '';
+  }
+
+  function flipTo(dir, oldSrc, rect) {
+    resetFlip();
+    if (!lbStage.animate) return;              // trình duyệt quá cũ: bỏ qua hiệu ứng
+
+    var st = lbStage.getBoundingClientRect();
+    lbFlip.src = oldSrc;
+    lbFlip.classList.add('is-on');
+    lbFlip.style.width  = rect.width + 'px';
+    lbFlip.style.height = rect.height + 'px';
+    lbFlip.style.left   = (rect.left - st.left) + 'px';
+    lbFlip.style.top    = (rect.top - st.top) + 'px';
+
+    var el, frames, opts;
+
+    /* Trang phải mờ gần hết TRƯỚC khi chạm mốc 90°: qua mốc đó người xem
+       sẽ thấy mặt sau tờ giấy (bản lật ngược), trông sai. Cho nên ở 88°
+       độ mờ chỉ còn .22 rồi tắt hẳn ở 102°. */
+    if (dir > 0) {
+      el = lbFlip;
+      frames = [
+        { transform: 'rotateY(0deg)',    filter: 'brightness(1)',   opacity: 1,   offset: 0    },
+        { transform: 'rotateY(-58deg)',  filter: 'brightness(.55)', opacity: 1,   offset: 0.5  },
+        { transform: 'rotateY(-88deg)',  filter: 'brightness(.32)', opacity: .22, offset: 0.82 },
+        { transform: 'rotateY(-102deg)', filter: 'brightness(.26)', opacity: 0,   offset: 1    }
+      ];
+      // đi ra: tăng tốc dần, ngắn hơn
+      opts = { duration: 430, easing: 'cubic-bezier(.55,.06,.35,1)', fill: 'forwards' };
+    } else {
+      el = lbImg;                              // trang mới lật vào, phải nằm trên
+      lbImg.style.zIndex = '3';
+      lbImg.style.transition = 'none';
+      frames = [
+        { transform: 'rotateY(-102deg)', filter: 'brightness(.26)', opacity: 0,   offset: 0    },
+        { transform: 'rotateY(-88deg)',  filter: 'brightness(.32)', opacity: .22, offset: 0.18 },
+        { transform: 'rotateY(-58deg)',  filter: 'brightness(.55)', opacity: 1,   offset: 0.5  },
+        { transform: 'rotateY(0deg)',    filter: 'brightness(1)',   opacity: 1,   offset: 1    }
+      ];
+      // đi vào: giảm tốc khi tới nơi, dài hơn một chút
+      opts = { duration: 500, easing: 'cubic-bezier(.22,.61,.36,1)', fill: 'forwards' };
+    }
+
+    el.style.transformOrigin = 'left center';
+    flipAnim = el.animate(frames, opts);
+    flipAnim.finished.then(resetFlip).catch(function () { /* bị huỷ do bấm nhanh */ });
+  }
+
+  function showAt(i, dir) {
     var it = state.items[i];
     if (!it) return;
+
+    var oldSrc  = lbImg.getAttribute('src');
+    var oldRect = lbImg.getBoundingClientRect();
+
     state.i = i;
     unzoom();
     lbImg.src = it.f;
@@ -243,9 +312,16 @@
     lbPrev.disabled = i === 0;
     lbNext.disabled = i === state.items.length - 1;
 
-    // nạp trước ảnh kế tiếp cho mượt
-    var nx = state.items[i + 1];
-    if (nx) { var p = new Image(); p.src = nx.f; }
+    if (dir && oldSrc && oldRect.width && !reduced.matches) {
+      flipTo(dir, oldSrc, oldRect);
+    } else {
+      resetFlip();
+    }
+
+    // nạp trước ảnh hai bên cho lật mượt, không phải chờ tải
+    [state.items[i + 1], state.items[i - 1]].forEach(function (nb) {
+      if (nb) { var p = new Image(); p.src = nb.f; }
+    });
   }
 
   function openLB(i) {
@@ -260,6 +336,7 @@
     lb.hidden = true;
     document.body.style.overflow = '';
     unzoom();
+    resetFlip();
     lbImg.src = '';
     if (lastFocus && lastFocus.focus) lastFocus.focus();
   }
@@ -274,8 +351,8 @@
     if (card) openLB(Number(card.getAttribute('data-i')));
   });
 
-  lbPrev.addEventListener('click', function () { showAt(state.i - 1); });
-  lbNext.addEventListener('click', function () { showAt(state.i + 1); });
+  lbPrev.addEventListener('click', function () { showAt(state.i - 1, -1); });
+  lbNext.addEventListener('click', function () { showAt(state.i + 1, 1); });
   lbClose.addEventListener('click', closeLB);
 
   /* Bấm vào ảnh → phóng to đúng vị trí con trỏ; bấm lại → thu về */
@@ -299,8 +376,8 @@
     if (lb.hidden) return;
     if (e.key === 'Escape') {
       if (lbStage.classList.contains('is-zoomed')) { unzoom(); } else { closeLB(); }
-    } else if (e.key === 'ArrowRight') { e.preventDefault(); showAt(state.i + 1); }
-    else if (e.key === 'ArrowLeft')  { e.preventDefault(); showAt(state.i - 1); }
+    } else if (e.key === 'ArrowRight') { e.preventDefault(); showAt(state.i + 1, 1); }
+    else if (e.key === 'ArrowLeft')  { e.preventDefault(); showAt(state.i - 1, -1); }
     else if (e.key === 'Tab') {
       var f = [lbClose, lbPrev, lbNext].filter(function (b) { return !b.disabled; });
       var at = f.indexOf(document.activeElement);
@@ -319,7 +396,8 @@
     var dx = e.changedTouches[0].clientX - tx;
     var dy = e.changedTouches[0].clientY - ty;
     if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.6) {
-      showAt(state.i + (dx < 0 ? 1 : -1));
+      var d = dx < 0 ? 1 : -1;
+      showAt(state.i + d, d);
     }
   }, { passive: true });
 

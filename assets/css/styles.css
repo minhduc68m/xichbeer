@@ -590,7 +590,25 @@ a { color: var(--brass); text-decoration-color: rgba(248,153,56,.4); text-underl
   transition: transform var(--t-slow) var(--ease);
   will-change: transform;
 }
-.lb__stage.is-zoomed img { cursor: zoom-out; transform: scale(2.4); }
+#lbImg { position: relative; z-index: 1; }
+.lb__stage.is-zoomed #lbImg { cursor: zoom-out; transform: scale(2.4); }
+
+/* ── Hiệu ứng lật trang ──────────────────────────────────────
+   Trang menu khổ dọc nên dùng phép lật kiểu sách: gáy nằm ở mép
+   TRÁI, trang xoay quanh gáy đó và tối dần lại như giấy bắt bóng.
+   #lbFlip là bản sao của trang cũ, chỉ tồn tại trong lúc animate. */
+.lb__stage { perspective: 1800px; perspective-origin: 50% 45%; }
+#lbFlip {
+  position: absolute; z-index: 2; display: none;
+  pointer-events: none; cursor: default;
+  transform-origin: left center;
+  /* KHÔNG dùng backface-visibility: hidden ở đây — qua mốc 90° trình duyệt
+     sẽ tắt phụt trang trong khi độ mờ vẫn còn ~0.6, tạo cú giật rất rõ.
+     Thay vào đó cho độ mờ về gần 0 ngay trước 90° (xem keyframes trong app.js). */
+  box-shadow: 0 0 46px rgba(0,0,0,.62);
+  transition: none;              /* không dính transition zoom của .lb__stage img */
+}
+#lbFlip.is-on { display: block; }
 
 .lb__nav {
   width: 50px; height: 50px; align-self: center; border-radius: 50%;
