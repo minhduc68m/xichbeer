@@ -194,16 +194,34 @@
       if (t.closest('.hdr__mid')) t.setAttribute('aria-current', on ? 'true' : 'false');
     });
 
-    if (scroll) {
-      document.getElementById('menu').scrollIntoView({
-        behavior: reduced.matches ? 'auto' : 'smooth', block: 'start'
-      });
-    }
+    if (scroll) cuonToiMenu();
+  }
+
+  function cuonToiMenu() {
+    document.getElementById('menu').scrollIntoView({
+      behavior: reduced.matches ? 'auto' : 'smooth', block: 'start'
+    });
   }
 
   $$('.mtab').forEach(function (btn) {
     btn.addEventListener('click', function () {
-      selectCat(btn.getAttribute('data-cat'), !btn.closest('.tabs'));
+      var cat    = btn.getAttribute('data-cat');
+      var scroll = !btn.closest('.tabs');
+
+      if (!btn.closest('.drawer')) { selectCat(cat, scroll); return; }
+
+      /* Drawer nằm BÊN TRONG header dính, nên lúc mở nó đẩy toàn bộ nội
+         dung trang xuống đúng bằng chiều cao của nó (~449px trên iPhone).
+         Nếu tính vị trí cuộn khi drawer còn mở rồi mới đóng, trang sẽ
+         trượt lên chừng đó và cuộn quá tay — tiêu đề mục bay khỏi màn
+         hình. Phải đóng drawer, đợi trình duyệt dựng lại bố cục, rồi mới
+         cuộn. */
+      setDrawer(false);
+      selectCat(cat, false);
+      if (!scroll) return;
+      window.requestAnimationFrame(function () {
+        window.requestAnimationFrame(cuonToiMenu);
+      });
     });
   });
 
