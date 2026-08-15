@@ -79,6 +79,16 @@ a { color: var(--brass); text-decoration-color: rgba(248,153,56,.4); text-underl
 .sec { padding-block: var(--s-6); position: relative; }
 @media (min-width: 900px) { .sec { padding-block: var(--s-7); } }
 
+/* Nhảy tới bằng liên kết #menu / #vitri / #datban:
+   Trình duyệt căn MÉP TRÊN của section. Section lại có sẵn đệm trên
+   (64px), cộng scroll-padding-top 80px chừa cho header dính -> tiêu đề
+   tụt xuống 144px, hở một khoảng trống lớn.
+   scroll-margin-top ÂM cho phần đệm rỗng đó trượt lên nằm dưới header,
+   kéo tiêu đề lên còn cách header khoảng 20px. Chỉ ảnh hưởng lúc nhảy
+   bằng liên kết, cuộn tay bình thường vẫn giữ nguyên khoảng cách. */
+.sec[id] { scroll-margin-top: calc(8px - var(--s-6)); }
+@media (min-width: 900px) { .sec[id] { scroll-margin-top: calc(8px - var(--s-7)); } }
+
 .sec__hd { margin-bottom: var(--s-4); text-align: center; }
 .eyebrow {
   font-size: .75rem; font-weight: 600; letter-spacing: .22em; text-transform: uppercase;
