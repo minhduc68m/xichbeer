@@ -28,7 +28,7 @@
        ⚠ LƯU Ý AN TOÀN
        Token này nằm trong mã nguồn trang web công khai, ai xem cũng
        thấy. Người lấy được nó CHỈ có thể nhắn tin qua bot này —
-       KHÔNG đọc được tin nhắn Telegram cá nhân của anh/chị.
+       KHÔNG đọc được tin nhắn Telegram cá nhân của chủ quán.
        Nếu bị spam: vào BotFather gõ /revoke để lấy token mới, dán
        lại vào đây là xong.
        ══════════════════════════════════════════════════════════════ */
@@ -459,7 +459,7 @@
               msg: 'Số người phải từ 1 đến 200.' },
     time:   { el: '#f-time',   err: '#e-time',
               test: function (v) { return !!v && !isNaN(new Date(v).getTime()); },
-              msg: 'Chọn ngày giờ anh/chị muốn tới quán.' }
+              msg: 'Chọn ngày giờ Quý khách muốn tới quán.' }
   };
 
   function check(key, silent) {
@@ -662,7 +662,7 @@
       hienBanDuPhong(msg);
       copyText(msg)
         .then(function () { toast('Đã sao chép — bấm “Mở Messenger & dán”.'); })
-        .catch(function () { toast('Nội dung đặt bàn đã hiện bên dưới, anh/chị chép giúp nhé.'); });
+        .catch(function () { toast('Nội dung đặt bàn đã hiện bên dưới, Quý khách chép giúp nhé.'); });
       return;
     }
 
@@ -682,7 +682,7 @@
         // Không bỏ rơi khách: vẫn cho họ đường gửi tay
         hienBanDuPhong(msg);
         copyText(msg).catch(function () {});
-        toast('Chưa gửi được tới quán — anh/chị gửi giúp qua Messenger hoặc gọi điện nhé.');
+        toast('Chưa gửi được tới quán — Quý khách gửi giúp qua Messenger hoặc gọi điện nhé.');
         if (window.console) console.warn('Telegram:', err && err.message);
       })
       .then(function () {
@@ -694,6 +694,6 @@
   $('#bookCopy').addEventListener('click', function () {
     copyText($('#bookMsg').textContent)
       .then(function () { toast('Đã sao chép nội dung đặt bàn.'); })
-      .catch(function () { toast('Trình duyệt chặn sao chép — anh/chị bôi đen rồi copy tay nhé.'); });
+      .catch(function () { toast('Trình duyệt chặn sao chép — Quý khách bôi đen rồi copy tay nhé.'); });
   });
 })();
