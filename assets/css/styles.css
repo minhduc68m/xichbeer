@@ -5,6 +5,13 @@
    ═══════════════════════════════════════════════════════════ */
 
 :root {
+  /* Báo cho trình duyệt biết đây là giao diện tối, để nó vẽ những thứ do
+     CHÍNH NÓ dựng theo tông tối: bảng chọn ngày giờ, thanh cuộn, ô tự
+     điền. Thiếu dòng này thì bảng chọn ngày hiện nền trắng chói giữa
+     trang đen. CSS của mình không với tới được mấy thứ đó. */
+  color-scheme: dark;
+  accent-color: #F89938;          /* ô ngày được chọn dùng màu cam của quán, không phải xanh mặc định */
+
   /* Màu */
   --ink:        #0B0B0C;
   --ink-2:      #121214;
@@ -484,7 +491,7 @@ a { color: var(--brass); text-decoration-color: rgba(248,153,56,.4); text-underl
 .req { color: var(--brass); }
 .opt { font-weight: 400; color: var(--bone-dim); font-size: .82rem; }
 
-.field input, .field textarea {
+.field input, .field textarea, .field select {
   width: 100%; min-height: 50px; padding: .78rem 1rem;
   background: var(--ink-3); color: var(--bone);
   border: 1px solid var(--steel-2); border-radius: var(--r);
@@ -511,10 +518,31 @@ a { color: var(--brass); text-decoration-color: rgba(248,153,56,.4); text-underl
 }
 .field textarea { min-height: 72px; resize: vertical; }
 .field input::placeholder, .field textarea::placeholder { color: #6E675E; }
-.field input:hover, .field textarea:hover { border-color: var(--steel-2); background: #1D1E21; }
-.field input:focus, .field textarea:focus { border-color: var(--brass); background: #1D1E21; }
+.field input:hover, .field textarea:hover, .field select:hover { border-color: var(--steel-2); background: #1D1E21; }
+.field input:focus, .field textarea:focus, .field select:focus { border-color: var(--brass); background: #1D1E21; }
 .field input[aria-invalid="true"] { border-color: #E8663F; }
-.field input::-webkit-calendar-picker-indicator { filter: invert(.75) sepia(.7) saturate(4) hue-rotate(342deg); cursor: pointer; }
+/* color-scheme: dark khiến trình duyệt vẽ nút lịch màu TRẮNG. Bộ lọc cũ
+   được chỉnh theo nút màu ĐEN nên giờ sẽ ra xám đậm, chìm vào nền.
+   Để nguyên màu trắng của trình duyệt — luôn đọc được, không phụ thuộc
+   trình duyệt hay chủ đề sáng/tối. */
+.field input::-webkit-calendar-picker-indicator { opacity: .75; cursor: pointer; }
+.field input::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+
+/* Ô Giờ là <select>: bỏ mũi tên mặc định, vẽ mũi tên riêng cho hợp tông */
+.field select {
+  appearance: none; -webkit-appearance: none;
+  padding-right: 2.6rem; cursor: pointer;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23F89938' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 18px;
+}
+.field select:invalid { color: #6E675E; }   /* chưa chọn thì mờ như placeholder */
+
+/* Hàng 3 ô: Số người | Ngày | Giờ */
+@media (min-width: 720px) {
+  .field-row--3 { grid-template-columns: .85fr 1.1fr .95fr; }
+}
 
 .hint { font-size: .8rem; color: var(--bone-dim); }
 .err { font-size: .84rem; color: #FF8A63; font-weight: 500; display: flex; align-items: center; gap: .35rem; }

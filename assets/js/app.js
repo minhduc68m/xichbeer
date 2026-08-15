@@ -32,9 +32,39 @@
        Nếu bị spam: vào BotFather gõ /revoke để lấy token mới, dán
        lại vào đây là xong.
        ══════════════════════════════════════════════════════════════ */
+    /* Giờ mở cửa — sinh ra danh sách khung giờ trong ô "Giờ".
+       Đổi ở đây là đổi luôn các mốc khách chọn được. */
+    moCua: '10:00', dongCua: '23:30', buocPhut: 30,
+
     tgToken:  '8868532028:AAE9_NOg6FVoQIoPc0z28x6oJouQPKc86vs',                    // VD: '8123456789:AAF...'
     tgChatId: '-5513063294'                     // VD: '-1002345678901' hoặc '123456789'
   };
+
+  /* ─── Ô Ngày + Giờ ──────────────────────────────────────
+     Trước đây dùng một ô datetime-local, nhưng Chrome chỉ có MỘT bộ
+     chọn cho cả ô và nó là bảng lịch — bấm vào phần giờ vẫn bung ra
+     bảng chọn ngày. Tách đôi thì mỗi ô có bộ chọn đúng việc của nó. */
+  (function dungONgayGio() {
+    var oNgay = document.getElementById('f-date');
+    var oGio  = document.getElementById('f-time');
+    if (!oNgay || !oGio) return;
+
+    // Không cho đặt bàn cho ngày đã qua
+    var h = new Date();
+    var p2 = function (n) { return String(n).padStart(2, '0'); };
+    oNgay.min = h.getFullYear() + '-' + p2(h.getMonth() + 1) + '-' + p2(h.getDate());
+
+    var phut = function (hhmm) {
+      var t = hhmm.split(':');
+      return (+t[0]) * 60 + (+t[1]);
+    };
+    for (var m = phut(CFG.moCua); m <= phut(CFG.dongCua); m += CFG.buocPhut) {
+      var v = p2(Math.floor(m / 60)) + ':' + p2(m % 60);
+      var o = document.createElement('option');
+      o.value = v; o.textContent = v;
+      oGio.appendChild(o);
+    }
+  })();
 
   /* ─── Toast ───────────────────────────────────────────── */
   var toastEl = $('#toast'), toastT;
@@ -457,9 +487,12 @@
     people: { el: '#f-people', err: '#e-people',
               test: function (v) { var n = Number(v); return n >= 1 && n <= 200; },
               msg: 'Số người phải từ 1 đến 200.' },
-    time:   { el: '#f-time',   err: '#e-time',
+    date:   { el: '#f-date',   err: '#e-date',
               test: function (v) { return !!v && !isNaN(new Date(v).getTime()); },
-              msg: 'Chọn ngày giờ Quý khách muốn tới quán.' }
+              msg: 'Quý khách vui lòng chọn ngày tới quán.' },
+    time:   { el: '#f-time',   err: '#e-time',
+              test: function (v) { return !!v; },
+              msg: 'Quý khách vui lòng chọn giờ tới quán.' }
   };
 
   function check(key, silent) {
@@ -483,9 +516,12 @@
     });
   });
 
-  function fmtTime(v) {
-    var d = new Date(v);
-    if (isNaN(d.getTime())) return v;
+  // Ghép giá trị 2 ô thành chuỗi đọc được: "19:30 Thứ 3 18/08/2026"
+  function fmtTime() {
+    var ngay = $('#f-date').value, gio = $('#f-time').value;
+    if (!ngay || !gio) return '';
+    var d = new Date(ngay + 'T' + gio);
+    if (isNaN(d.getTime())) return gio + ' ' + ngay;
     var days = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
     var p = function (n) { return String(n).padStart(2, '0'); };
     return p(d.getHours()) + ':' + p(d.getMinutes()) + ' ' + days[d.getDay()] +
@@ -498,7 +534,7 @@
            '• Tên: '        + $('#f-name').value.trim() + '\n' +
            '• SĐT: '        + $('#f-tel').value.trim() + '\n' +
            '• Số người: '   + $('#f-people').value.trim() + '\n' +
-           '• Thời gian: '  + fmtTime($('#f-time').value) +
+           '• Thời gian: '  + fmtTime() +
            (note ? '\n• Ghi chú: ' + note : '');
   }
 
@@ -546,7 +582,7 @@
       '👤 <b>Tên:</b> '       + thoatHTML($('#f-name').value.trim()),
       '📞 <b>SĐT:</b> '       + thoatHTML($('#f-tel').value.trim()),
       '👥 <b>Số người:</b> '  + thoatHTML($('#f-people').value.trim()),
-      '🕐 <b>Thời gian:</b> ' + thoatHTML(fmtTime($('#f-time').value))
+      '🕐 <b>Thời gian:</b> ' + thoatHTML(fmtTime())
     ];
     if (note) d.push('📝 <b>Ghi chú:</b> ' + thoatHTML(note));
     d.push('', '<i>Gửi từ website Xích Beer</i>');
@@ -611,7 +647,12 @@
     $('#cfmName').textContent   = $('#f-name').value.trim();
     $('#cfmTel').textContent    = $('#f-tel').value.trim();
     $('#cfmPeople').textContent = $('#f-people').value.trim() + ' người';
-    $('#cfmTime').textContent   = fmtTime($('#f-time').value);
+    var d = new Date($('#f-date').value + 'T00:00');
+    var thu = ['Chủ nhật','Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'];
+    var p2  = function (n) { return String(n).padStart(2, '0'); };
+    $('#cfmDate').textContent   = isNaN(d.getTime()) ? $('#f-date').value
+      : thu[d.getDay()] + ', ' + p2(d.getDate()) + '/' + p2(d.getMonth() + 1) + '/' + d.getFullYear();
+    $('#cfmTime').textContent   = $('#f-time').value;
     $('#cfmNote').textContent   = note;
     $('#cfmNoteRow').hidden     = !note;      // không có ghi chú thì ẩn hẳn dòng
 

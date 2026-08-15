@@ -6,6 +6,9 @@
 <title>Xích Beer – 68 Nguyên Hồng, Láng, Hà Nội</title>
 <meta name="description" content="Xích Beer – nhà hàng bia trên phố Nguyên Hồng, Láng, Hà Nội. Bia lạnh, đồ nhắm nóng hổi, không gian industrial ấm cúng. Xem menu đồ ăn, đồ uống, combo và đặt bàn: 024.627.22.888.">
 <meta name="theme-color" content="#0B0B0C">
+<!-- Khai báo sớm ngay trong <head> để trình duyệt vẽ nền tối từ đầu,
+     không loé trắng một nhịp trong lúc chờ tải styles.css -->
+<meta name="color-scheme" content="dark">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://minhduc68m.github.io/xichbeer/">
 
@@ -235,7 +238,7 @@
         <p class="err" id="e-tel" role="alert" hidden></p>
       </div>
 
-      <div class="field-row">
+      <div class="field-row field-row--3">
         <div class="field">
           <label for="f-people">Số người <span class="req" aria-hidden="true">*</span></label>
           <input id="f-people" name="people" type="number" inputmode="numeric" min="1" max="200" step="1" required
@@ -243,8 +246,18 @@
           <p class="err" id="e-people" role="alert" hidden></p>
         </div>
         <div class="field">
-          <label for="f-time">Thời gian <span class="req" aria-hidden="true">*</span></label>
-          <input id="f-time" name="time" type="datetime-local" required aria-describedby="e-time h-time">
+          <label for="f-date">Ngày <span class="req" aria-hidden="true">*</span></label>
+          <input id="f-date" name="date" type="date" required aria-describedby="e-date">
+          <p class="err" id="e-date" role="alert" hidden></p>
+        </div>
+        <div class="field">
+          <label for="f-time">Giờ <span class="req" aria-hidden="true">*</span></label>
+          <!-- Chọn trong danh sách khung giờ thay vì gõ tự do: khách không đặt được
+               giờ quán đóng cửa, và trên điện thoại chọn nhanh hơn gõ. Các mốc giờ
+               do app.js sinh ra từ giờ mở cửa trong CFG. -->
+          <select id="f-time" name="time" required aria-describedby="e-time h-time">
+            <option value="">Chọn giờ</option>
+          </select>
           <p class="hint" id="h-time">Quán mở 10:00 – 23:30 hằng ngày.</p>
           <p class="err" id="e-time" role="alert" hidden></p>
         </div>
@@ -351,7 +364,8 @@
       <div class="cfm__row"><dt>Tên người đặt</dt><dd id="cfmName"></dd></div>
       <div class="cfm__row"><dt>Số điện thoại</dt><dd id="cfmTel"></dd></div>
       <div class="cfm__row"><dt>Số người</dt><dd id="cfmPeople"></dd></div>
-      <div class="cfm__row"><dt>Thời gian</dt><dd id="cfmTime"></dd></div>
+      <div class="cfm__row"><dt>Ngày</dt><dd id="cfmDate"></dd></div>
+      <div class="cfm__row"><dt>Giờ</dt><dd id="cfmTime"></dd></div>
       <div class="cfm__row" id="cfmNoteRow"><dt>Ghi chú</dt><dd id="cfmNote"></dd></div>
     </dl>
 
