@@ -14,7 +14,26 @@
   var CFG = {
     fbPage: 'xichbeer',              // facebook.com/<fbPage>
     tel:    '+842462722888',
-    telText:'024.627.22.888'
+    telText:'024.627.22.888',
+
+    /* ══════════════════════════════════════════════════════════════
+       GỬI ĐƠN ĐẶT BÀN QUA TELEGRAM
+
+       Điền 2 dòng dưới đây là đơn tự chạy về Telegram của quán.
+       Để trống thì trang vẫn chạy bình thường — nó quay về cách cũ:
+       hiện nội dung đơn cho khách sao chép rồi gửi qua Messenger.
+
+       Cách lấy 2 giá trị này: xem mục 7 trong README.md
+
+       ⚠ LƯU Ý AN TOÀN
+       Token này nằm trong mã nguồn trang web công khai, ai xem cũng
+       thấy. Người lấy được nó CHỈ có thể nhắn tin qua bot này —
+       KHÔNG đọc được tin nhắn Telegram cá nhân của anh/chị.
+       Nếu bị spam: vào BotFather gõ /revoke để lấy token mới, dán
+       lại vào đây là xong.
+       ══════════════════════════════════════════════════════════════ */
+    tgToken:  '',                    // VD: '8123456789:AAF...'
+    tgChatId: ''                     // VD: '-1002345678901' hoặc '123456789'
   };
 
   /* ─── Toast ───────────────────────────────────────────── */
@@ -508,6 +527,63 @@
     return copyLegacy(text) ? Promise.resolve() : Promise.reject();
   }
 
+  /* ─── Gửi thẳng về Telegram của quán ────────────────────── */
+  var daCauHinhTelegram = function () {
+    return !!(CFG.tgToken && CFG.tgChatId);
+  };
+
+  // Bắt buộc thoát ký tự: khách gõ dấu < > & vào ô ghi chú mà không thoát
+  // thì Telegram từ chối cả tin nhắn vì sai cú pháp HTML.
+  function thoatHTML(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function tinNhanTelegram() {
+    var note = $('#f-note').value.trim();
+    var d = [
+      '🍺 <b>ĐƠN ĐẶT BÀN MỚI</b>',
+      '',
+      '👤 <b>Tên:</b> '       + thoatHTML($('#f-name').value.trim()),
+      '📞 <b>SĐT:</b> '       + thoatHTML($('#f-tel').value.trim()),
+      '👥 <b>Số người:</b> '  + thoatHTML($('#f-people').value.trim()),
+      '🕐 <b>Thời gian:</b> ' + thoatHTML(fmtTime($('#f-time').value))
+    ];
+    if (note) d.push('📝 <b>Ghi chú:</b> ' + thoatHTML(note));
+    d.push('', '<i>Gửi từ website Xích Beer</i>');
+    return d.join('\n');
+  }
+
+  function guiTelegram() {
+    return fetch('https://api.telegram.org/bot' + CFG.tgToken + '/sendMessage', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: CFG.tgChatId,
+        text: tinNhanTelegram(),
+        parse_mode: 'HTML'
+      })
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (kq) {
+      // Telegram luôn trả HTTP 200, phải xem cờ "ok" bên trong mới biết
+      if (!kq || !kq.ok) throw new Error(kq && kq.description || 'Telegram từ chối');
+      return kq;
+    });
+  }
+
+  /* Cách dự phòng: hiện nội dung đơn cho khách tự sao chép + gửi Messenger.
+     Dùng khi chưa cấu hình Telegram, hoặc gửi hỏng (mất mạng, token sai...) */
+  function hienBanDuPhong(msg) {
+    $('#bookMsg').textContent = msg;
+    $('#bookMsn').href = 'https://m.me/' + CFG.fbPage;
+    var out = $('#bookOut');
+    out.hidden = false;
+    out.focus();
+    out.scrollIntoView({ behavior: reduced.matches ? 'auto' : 'smooth', block: 'center' });
+  }
+
+  var nutGui = $('#bookSend'), chuNutGui = $('#bookSendText');
+
   form.addEventListener('submit', function (e) {
     e.preventDefault();
 
@@ -522,19 +598,41 @@
     }
 
     var msg = buildMessage();
-    $('#bookMsg').textContent = msg;
-    $('#bookMsn').href = 'https://m.me/' + CFG.fbPage;
+    $('#bookOk').hidden = true;
+    $('#bookOut').hidden = true;
 
-    var out = $('#bookOut');
-    out.hidden = false;
-    out.focus();
-    out.scrollIntoView({ behavior: reduced.matches ? 'auto' : 'smooth', block: 'center' });
+    /* Chưa điền token -> chạy y như trước, trang không bao giờ "chết" */
+    if (!daCauHinhTelegram()) {
+      hienBanDuPhong(msg);
+      copyText(msg)
+        .then(function () { toast('Đã sao chép — bấm “Mở Messenger & dán”.'); })
+        .catch(function () { toast('Nội dung đặt bàn đã hiện bên dưới, anh/chị chép giúp nhé.'); });
+      return;
+    }
 
-    // Copy ngay trong handler để còn "user activation"; hỏng cũng không sao
-    // vì nội dung đã hiện sẵn để anh/chị bôi đen chép tay.
-    copyText(msg)
-      .then(function () { toast('Đã sao chép — bấm “Mở Messenger & dán”.'); })
-      .catch(function () { toast('Nội dung đặt bàn đã hiện bên dưới, anh/chị chép giúp nhé.'); });
+    nutGui.disabled = true;
+    chuNutGui.textContent = 'Đang gửi…';
+
+    guiTelegram()
+      .then(function () {
+        var ok = $('#bookOk');
+        ok.hidden = false;
+        ok.focus();
+        ok.scrollIntoView({ behavior: reduced.matches ? 'auto' : 'smooth', block: 'center' });
+        form.reset();
+        toast('Đã gửi đơn đặt bàn tới quán.');
+      })
+      .catch(function (err) {
+        // Không bỏ rơi khách: vẫn cho họ đường gửi tay
+        hienBanDuPhong(msg);
+        copyText(msg).catch(function () {});
+        toast('Chưa gửi được tới quán — anh/chị gửi giúp qua Messenger hoặc gọi điện nhé.');
+        if (window.console) console.warn('Telegram:', err && err.message);
+      })
+      .then(function () {
+        nutGui.disabled = false;
+        chuNutGui.textContent = 'Gửi đơn đặt bàn';
+      });
   });
 
   $('#bookCopy').addEventListener('click', function () {

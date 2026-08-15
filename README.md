@@ -68,8 +68,9 @@ Ngoài ra:
 - **Địa chỉ trang** đã trỏ đúng `https://minhduc68m.github.io/xichbeer/`. Chỉ phải sửa lại nếu sau này đổi sang tên miền riêng — khi đó đổi cả 4 chỗ: `canonical`, `og:url`, `og:image` và `"image"` trong khối JSON-LD. **Phải là địa chỉ đầy đủ** vì Facebook không đọc được đường dẫn tương đối.
 - **Email quán** là `xichbeer1@gmail.com`, ở footer `index.html`.
 - **Giờ mở cửa** đang là **10:00 – 23:30 mọi ngày**. Sửa ở 3 nơi nếu đổi: bảng `<ul id="hours">`, dòng `Quán mở 10:00 – 23:30 hằng ngày` trong form, và mục `openingHoursSpecification` trong khối JSON-LD ở `<head>`.
-- **Nút đặt bàn** gửi qua Facebook Messenger của trang `facebook.com/xichbeer`. Muốn đổi sang trang khác: sửa `fbPage` ở đầu `assets/js/app.js`.
-  Muốn dùng **Zalo** thay Messenger: đổi link nút `#bookMsn` trong `index.html` thành `https://zalo.me/<số-zalo>` và sửa nhãn nút.
+- **Nhận đơn đặt bàn qua Telegram** — xem mục 7. Chưa cấu hình thì đơn vẫn chạy qua Messenger như cũ.
+- **Trang Messenger dự phòng** là `facebook.com/xichbeer`. Đổi sang trang khác: sửa `fbPage` ở đầu `assets/js/app.js`.
+  Muốn thay bằng **Zalo**: đổi link nút `#bookMsn` trong `index.html` thành `https://zalo.me/<số-zalo>` và sửa nhãn nút. Lưu ý Zalo **không** nhận nội dung soạn sẵn qua link — khách vẫn phải tự dán.
 
 ---
 
@@ -185,3 +186,67 @@ anh đẩy ảnh mới lên. Đừng sửa tay hai chỗ đó — lần build sa
 - **Bản đồ Google** bị đảo màu bằng CSS để hợp nền tối (Google Maps nhúng không có tuỳ chọn dark mode).
 - Toàn bộ chuyển động đều tắt khi máy khách bật *Giảm chuyển động* (`prefers-reduced-motion`).
 - Trang không thu thập dữ liệu, không cookie, không script bên thứ ba ngoài Google Fonts và Google Maps.
+
+---
+
+## 7. Nhận đơn đặt bàn qua Telegram
+
+Khách điền form trên web → đơn hiện thẳng trong Telegram của quán. Chưa cấu hình thì
+trang vẫn chạy bình thường, chỉ là quay về cách cũ (hiện đơn cho khách sao chép rồi
+gửi qua Messenger).
+
+### Bước 1 — Tạo bot, lấy token
+
+1. Mở Telegram, tìm **@BotFather**
+2. Gõ `/newbot`
+3. Đặt tên hiển thị, ví dụ `Xích Beer Đặt Bàn`
+4. Đặt username, phải kết thúc bằng `bot`, ví dụ `xichbeer_datban_bot`
+5. BotFather trả về một dòng dài dạng `8123456789:AAF...` — **đó là token**
+
+### Bước 2 — Lấy chat id
+
+**Nhận đơn vào Telegram cá nhân:**
+
+1. Tìm **@userinfobot**, bấm Start
+2. Nó trả về `Id: 123456789` — đó là chat id
+3. Quay lại bot vừa tạo ở bước 1, bấm **Start** (bắt buộc, không bấm thì bot không
+   nhắn cho anh được)
+
+**Nhận đơn vào nhóm chung cho cả quán** (khuyên dùng — nhân viên nào cũng thấy):
+
+1. Tạo nhóm Telegram, thêm bot vừa tạo vào nhóm
+2. Nhắn một tin bất kỳ trong nhóm
+3. Mở trình duyệt, vào địa chỉ này (thay `<TOKEN>` bằng token của anh):
+   `https://api.telegram.org/bot<TOKEN>/getUpdates`
+4. Tìm dòng `"chat":{"id":-1002345678901` — số đó (**kể cả dấu trừ**) là chat id
+
+### Bước 3 — Điền vào file
+
+Mở `assets/js/app.js`, ngay đầu file tìm khối `var CFG` rồi điền 2 dòng:
+
+```js
+tgToken:  '8123456789:AAF...',
+tgChatId: '-1002345678901'
+```
+
+Đẩy lên GitHub. Xong — thử đặt bàn một lần trên web để kiểm tra.
+
+### Cần biết về an toàn
+
+Token này **nằm trong mã nguồn trang web công khai**, ai xem cũng thấy.
+
+Người lấy được token **chỉ có thể nhắn tin qua bot này**. Họ **không** đọc được tin
+nhắn Telegram cá nhân của anh, **không** vào được tài khoản của anh.
+
+Rủi ro thật sự chỉ là: ai đó nghịch, gửi tin rác vào đúng nhóm đặt bàn. Gặp trường hợp
+đó thì vào **@BotFather** → `/revoke` → lấy token mới → dán lại vào `app.js` → đẩy lên.
+Token cũ chết ngay lập tức.
+
+Muốn giấu hẳn token thì phải có máy chủ trung gian (Cloudflare Worker miễn phí, hoặc
+hosting có PHP). Khi đó sửa hàm `guiTelegram()` trong `app.js` để gọi sang địa chỉ
+trung gian đó thay vì gọi thẳng `api.telegram.org`.
+
+### Nếu gửi hỏng
+
+Mất mạng, token sai, hoặc Telegram lỗi — trang **không bỏ rơi khách**: nó tự hiện lại
+nội dung đơn đã sao chép sẵn kèm nút Messenger và nút gọi điện, y như khi chưa cấu hình.

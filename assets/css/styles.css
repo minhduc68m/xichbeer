@@ -549,6 +549,11 @@ a { color: var(--brass); text-decoration-color: rgba(248,153,56,.4); text-underl
 .sent__acts { display: flex; flex-wrap: wrap; gap: var(--s-1); }
 .sent__acts .btn { flex: 1 1 auto; min-width: 150px; }
 
+/* Gửi thành công — xanh lá để phân biệt rõ với khối "cần làm thêm" màu cam */
+.sent--ok { border-color: #2E6B41; background: rgba(60,180,105,.09); }
+.sent--ok .sent__hd { color: #6FD897; }        /* 8.9:1 trên nền tối */
+.sent__note { color: var(--bone-dim); margin: 0; }
+
 /* ═══════════ 6. FOOTER ═══════════ */
 .ft { background: var(--ink); border-top: 1px solid var(--steel); padding-top: var(--s-5); }
 .ft__in { display: grid; gap: var(--s-4); padding-bottom: var(--s-4); }
