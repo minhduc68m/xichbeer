@@ -1,0 +1,16 @@
+{
+  "name": "xich-beer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Landing page mot trang cho Xich Beer - 68 Nguyen Hong, Lang, Ha Noi",
+  "type": "module",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "dev": "node serve.mjs",
+    "build": "node build.mjs",
+    "build:images": "node build.mjs"
+  },
+  "optionalDependencies": {
+    "sharp": "^0.33.5"
+  }
+}
