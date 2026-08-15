@@ -142,11 +142,6 @@ window.XICH_GALLERY = {
         "t": "assets/img/combo/thumb/c05.webp",
         "f": "assets/img/combo/full/c05.webp",
         "a": "Menu Combo Xích Beer – trang 5"
-      },
-      {
-        "t": "assets/img/combo/thumb/c06.webp",
-        "f": "assets/img/combo/full/c06.webp",
-        "a": "Menu Combo Xích Beer – trang 6"
       }
     ]
   }
