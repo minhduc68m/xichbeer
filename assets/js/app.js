@@ -597,9 +597,65 @@
       return;
     }
 
-    var msg = buildMessage();
     $('#bookOk').hidden = true;
     $('#bookOut').hidden = true;
+    moHopXacNhan();                 // soát lại rồi mới gửi
+  });
+
+  /* ─── Hộp xác nhận trước khi gửi ────────────────────────── */
+  var cfm = $('#cfm'), cfmOk = $('#cfmOk'), cfmBack = $('#cfmBack');
+  var focusTruocCfm = null;
+
+  function moHopXacNhan() {
+    var note = $('#f-note').value.trim();
+    $('#cfmName').textContent   = $('#f-name').value.trim();
+    $('#cfmTel').textContent    = $('#f-tel').value.trim();
+    $('#cfmPeople').textContent = $('#f-people').value.trim() + ' người';
+    $('#cfmTime').textContent   = fmtTime($('#f-time').value);
+    $('#cfmNote').textContent   = note;
+    $('#cfmNoteRow').hidden     = !note;      // không có ghi chú thì ẩn hẳn dòng
+
+    focusTruocCfm = document.activeElement;
+    cfm.hidden = false;
+    document.body.style.overflow = 'hidden';
+    cfmOk.focus();
+  }
+
+  function dongHopXacNhan(traLaiFocus) {
+    cfm.hidden = true;
+    document.body.style.overflow = '';
+    if (traLaiFocus && focusTruocCfm && focusTruocCfm.focus) focusTruocCfm.focus();
+  }
+
+  cfmBack.addEventListener('click', function () {
+    dongHopXacNhan(true);
+    $('#f-name').focus();          // đưa thẳng về ô đầu để sửa
+  });
+
+  // Bấm ra nền tối = quay lại sửa, không gửi
+  cfm.addEventListener('click', function (e) {
+    if (e.target === cfm) dongHopXacNhan(true);
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (cfm.hidden) return;
+    if (e.key === 'Escape') { dongHopXacNhan(true); return; }
+    if (e.key === 'Tab') {          // giữ bàn phím quẩn trong hộp
+      var f = [cfmOk, cfmBack];
+      var at = f.indexOf(document.activeElement);
+      e.preventDefault();
+      f[(at + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus();
+    }
+  });
+
+  cfmOk.addEventListener('click', function () {
+    dongHopXacNhan(false);
+    guiDon();
+  });
+
+  /* ─── Gửi thật ──────────────────────────────────────────── */
+  function guiDon() {
+    var msg = buildMessage();
 
     /* Chưa điền token -> chạy y như trước, trang không bao giờ "chết" */
     if (!daCauHinhTelegram()) {
@@ -633,7 +689,7 @@
         nutGui.disabled = false;
         chuNutGui.textContent = 'Gửi đơn đặt bàn';
       });
-  });
+  }
 
   $('#bookCopy').addEventListener('click', function () {
     copyText($('#bookMsg').textContent)
