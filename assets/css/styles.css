@@ -481,9 +481,24 @@ a { color: var(--brass); text-decoration-color: rgba(248,153,56,.4); text-underl
   font-size: 1rem; /* ≥16px: iOS không tự zoom khi focus */
   transition: border-color var(--t) var(--ease), background var(--t) var(--ease);
 }
-/* datetime-local dựng nội dung bên trong cao hơn input thường ~2px.
-   Ghim line-height để 4 ô trên cùng một hàng cao bằng nhau. */
-.field input { line-height: 1.25; }
+/* Ô ngày giờ cao hơn các ô khác — cách sửa phải khác nhau theo trình duyệt:
+   · Chrome: chỉ cần line-height, vì nó dựng nội dung như chữ thường.
+   · iOS Safari: dựng bằng shadow DOM riêng, TỰ QUYẾT chiều cao theo nội
+     dung bên trong và bỏ qua line-height lẫn min-height. Phải ghim
+     `height` cứng, và bỏ giao diện mặc định của hệ điều hành thì nó mới
+     chịu nghe. */
+.field input {
+  line-height: 1.25;
+  height: 50px;                 /* height chứ không phải min-height — iOS mới tuân */
+}
+.field input[type="datetime-local"] {
+  -webkit-appearance: none; appearance: none;
+}
+/* iOS căn giữa phần giá trị ngày giờ và chèn lề riêng; kéo về cho khớp
+   với chữ placeholder của các ô còn lại */
+.field input[type="datetime-local"]::-webkit-date-and-time-value {
+  text-align: left; margin: 0; line-height: normal;
+}
 .field textarea { min-height: 72px; resize: vertical; }
 .field input::placeholder, .field textarea::placeholder { color: #6E675E; }
 .field input:hover, .field textarea:hover { border-color: var(--steel-2); background: #1D1E21; }
