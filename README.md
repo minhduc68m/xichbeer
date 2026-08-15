@@ -57,16 +57,16 @@ GitHub Pages tự cập nhật sau khoảng 1 phút.
 
 ## 3. Cần sửa gì sau khi deploy
 
-Ba chỗ dùng nội dung tạm, đều có ghi chú `TODO(Xích Beer)` ngay trong file:
+Còn **một** chỗ dùng nội dung tạm, có ghi chú `TODO(Xích Beer)` ngay trong file:
 
 | Việc | Ở đâu | Sửa thành |
 |---|---|---|
-| Địa chỉ trang thật (cho SEO + ảnh share Facebook/Zalo) | `index.html` — thẻ `og:url`, `og:image`, `canonical`, và `"image"` trong khối JSON-LD | Thay `https://xichbeer.github.io/` bằng địa chỉ thật. **Phải là địa chỉ đầy đủ** — Facebook không đọc được đường dẫn tương đối. |
-| Email quán | `index.html` — footer, `mailto:lienhe@xichbeer.vn` | Email thật, hoặc xoá hẳn dòng đó |
 | Instagram | `index.html` — footer, khối `<a>` Instagram | Link thật, hoặc xoá cả khối `<a>` |
 
 Ngoài ra:
 
+- **Địa chỉ trang** đã trỏ đúng `https://minhduc68m.github.io/xichbeer/`. Chỉ phải sửa lại nếu sau này đổi sang tên miền riêng — khi đó đổi cả 4 chỗ: `canonical`, `og:url`, `og:image` và `"image"` trong khối JSON-LD. **Phải là địa chỉ đầy đủ** vì Facebook không đọc được đường dẫn tương đối.
+- **Email quán** là `xichbeer1@gmail.com`, ở footer `index.html`.
 - **Giờ mở cửa** đang là **10:00 – 23:30 mọi ngày**. Sửa ở 3 nơi nếu đổi: bảng `<ul id="hours">`, dòng `Quán mở 10:00 – 23:30 hằng ngày` trong form, và mục `openingHoursSpecification` trong khối JSON-LD ở `<head>`.
 - **Nút đặt bàn** gửi qua Facebook Messenger của trang `facebook.com/xichbeer`. Muốn đổi sang trang khác: sửa `fbPage` ở đầu `assets/js/app.js`.
   Muốn dùng **Zalo** thay Messenger: đổi link nút `#bookMsn` trong `index.html` thành `https://zalo.me/<số-zalo>` và sửa nhãn nút.
