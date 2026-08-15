@@ -110,19 +110,51 @@ async function buildMenu() {
   console.log('✓ assets/js/gallery-data.js');
 }
 
-/* ── Hero, logo, OG ──────────────────────────────────────── */
-async function buildBrand() {
-  await mkdir(OUT, { recursive: true });
-  const hero = 'Khac/khonggian.png';
-  const logo = 'Khac/logo.png';
+/* ── Hero, logo, OG ──────────────────────────────────────────
+   Hero và ảnh share LUÔN xuất .jpg, logo luôn .png — vì index.html
+   trỏ thẳng tới đúng tên file đó. Chỉ ảnh menu mới đổi đuôi theo bộ
+   xử lý (webp khi có sharp, jpg khi dùng sips).                     */
 
+async function buildBrandSharp(hero, logo) {
   if (existsSync(hero)) {
-    // Hero: JPEG ở mọi trường hợp — <img srcset> trong index.html trỏ tới .jpg
+    for (const [w, q] of [[900, 62], [1600, 60], [2400, 58]]) {
+      await sharp(hero).resize({ width: w, withoutEnlargement: true })
+        .jpeg({ quality: q, mozjpeg: true }).toFile(`${OUT}/hero-${w}.jpg`);
+    }
+    // OG 1200×630: cắt đúng tỉ lệ 1.905:1 trước rồi mới thu nhỏ, tránh viền đen
+    const { width: W, height: H } = await sharp(hero).metadata();
+    const cw = Math.min(W, Math.round(H * 1200 / 630));
+    await sharp(hero)
+      .extract({ left: Math.round((W - cw) / 2), top: 0, width: cw, height: H })
+      .resize(1200, 630).jpeg({ quality: 70, mozjpeg: true })
+      .toFile(`${OUT}/og-image.jpg`);
+    console.log('✓ hero-900/1600/2400.jpg + og-image.jpg');
+  } else {
+    console.warn('⚠  Không thấy Khac/khonggian.png — bỏ qua hero & ảnh share.');
+  }
+
+  if (existsSync(logo)) {
+    for (const [w, name] of [[440, 'logo.png'], [1100, 'logo-lg.png']]) {
+      await sharp(logo).resize({ width: w, withoutEnlargement: true }).png().toFile(`${OUT}/${name}`);
+    }
+    // Favicon: cắt riêng hình xích/bánh răng ở bên trái logo
+    const { width: W, height: H } = await sharp(logo).metadata();
+    const side = Math.min(780, H, W);
+    await sharp(logo)
+      .extract({ left: Math.min(170, W - side), top: Math.min(90, H - side), width: side, height: side })
+      .resize(180, 180).png().toFile(`${OUT}/mark.png`);
+    console.log('✓ logo.png + logo-lg.png + mark.png (favicon)');
+  } else {
+    console.warn('⚠  Không thấy Khac/logo.png — bỏ qua logo & favicon.');
+  }
+}
+
+async function buildBrandSips(hero, logo) {
+  if (existsSync(hero)) {
     for (const [w, q] of [[900, 62], [1600, 60], [2400, 58]]) {
       await run('sips', ['-s', 'format', 'jpeg', '-s', 'formatOptions', String(q),
                          '-Z', String(w), hero, '--out', `${OUT}/hero-${w}.jpg`]);
     }
-    // OG 1200×630: cắt đúng tỉ lệ 1.905:1 trước khi thu nhỏ, tránh viền đen
     const { stdout } = await run('sips', ['-g', 'pixelWidth', '-g', 'pixelHeight', hero]);
     const W = +stdout.match(/pixelWidth:\s*(\d+)/)[1];
     const H = +stdout.match(/pixelHeight:\s*(\d+)/)[1];
@@ -145,6 +177,14 @@ async function buildBrand() {
   } else {
     console.warn('⚠  Không thấy Khac/logo.png — bỏ qua logo & favicon.');
   }
+}
+
+async function buildBrand() {
+  await mkdir(OUT, { recursive: true });
+  const hero = 'Khac/khonggian.png';
+  const logo = 'Khac/logo.png';
+  // sharp chạy được trên cả macOS lẫn Linux; sips chỉ có trên macOS
+  return sharp ? buildBrandSharp(hero, logo) : buildBrandSips(hero, logo);
 }
 
 console.log('\n▸ Xích Beer — build ảnh\n');

@@ -1,0 +1,65 @@
+# ═══════════════════════════════════════════════════════════════
+#  Tự dựng lại ảnh cho website Xích Beer
+#
+#  Cứ đẩy ảnh mới vào DoAn / DoUong / Combo / Khac là GitHub tự nén
+#  ảnh, cập nhật danh sách, rồi commit ngược lại. Trang web tự đổi
+#  theo sau khoảng 1–2 phút. Không phải chạy build.sh trên máy nữa.
+# ═══════════════════════════════════════════════════════════════
+name: Dựng lại ảnh
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'DoAn/**'
+      - 'DoUong/**'
+      - 'Combo/**'
+      - 'Khac/**'
+      - 'build.mjs'
+      - '.github/workflows/anh.yml'
+  workflow_dispatch:        # cho phép bấm chạy tay từ tab Actions
+
+# Cần quyền ghi để commit ngược thư mục assets/
+permissions:
+  contents: write
+
+# Đẩy liên tiếp nhiều lần thì chỉ chạy lần cuối, huỷ các lần đang dở
+concurrency:
+  group: dung-anh
+  cancel-in-progress: true
+
+jobs:
+  dung-anh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Lấy mã nguồn
+        uses: actions/checkout@v4
+
+      - name: Cài Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Cài sharp (bộ xử lý ảnh)
+        run: npm install --no-audit --no-fund
+
+      - name: Dựng lại toàn bộ ảnh
+        run: node build.mjs
+
+      # Build hỏng mà vẫn commit thì web mất ảnh — thà dừng còn hơn
+      - name: Kiểm tra kết quả trước khi commit
+        run: node kiem-tra-anh.mjs
+
+      - name: Commit ngược nếu có thay đổi
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A assets/img assets/js/gallery-data.js
+          if git diff --cached --quiet; then
+            echo "Ảnh không đổi — không cần commit."
+          else
+            git commit -m "Tự dựng lại ảnh từ thư mục gốc [tự động]"
+            git push
+            echo "Đã cập nhật assets/. Trang web sẽ đổi theo sau 1–2 phút."
+          fi

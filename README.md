@@ -76,52 +76,57 @@ Ngoài ra:
 ## 4. Thay hoặc thêm ảnh menu
 
 **Website không đọc thẳng từ `DoAn/`, `DoUong/`, `Combo/`.** Nó đọc bản đã nén trong
-`assets/img/` và danh sách `assets/js/gallery-data.js`. Thay ảnh gốc xong **phải chạy lại
-build** thì trang mới hiện ảnh mới.
+`assets/img/` và danh sách `assets/js/gallery-data.js`. Trước đây phải nhớ chạy `build.sh`, quên là web
+vẫn hiện ảnh cũ. **Giờ GitHub tự làm việc đó** mỗi khi anh đẩy ảnh mới lên.
 
-### Ba bước
+### Cách làm — chỉ 2 bước
 
-**Bước 1 — sửa ảnh gốc.** Thêm, xoá, hoặc thay file trong `DoAn/`, `DoUong/`, `Combo/`.
+**Bước 1.** Thêm, xoá, hoặc thay file ảnh trong `DoAn/`, `DoUong/`, `Combo/`.
 Nhận `.webp`, `.jpg`, `.jpeg`, `.png`.
 
 > **Tên file quyết định thứ tự hiển thị** — trang sắp A→Z. Nên đặt `a01`, `a02`, `a03`…
 > Muốn chèn một trang vào giữa `a02` và `a03` thì đặt tên `a02b`.
 
-**Bước 2 — chạy build:**
-
-```bash
-./build.sh
-```
-
-Nếu máy báo *permission denied*, chạy `chmod +x build.sh` một lần rồi thử lại.
-Script chỉ dùng `sips` + `python3` có sẵn của macOS — **không cần cài gì**.
-
-> Máy có Node thì `npm run build` cho kết quả tốt hơn một chút (ảnh WebP, nhẹ hơn ~30%).
-> Hai lệnh thay thế được cho nhau, dùng cái nào cũng ra trang chạy đúng.
-
-Script sẽ in ra số ảnh nó tìm thấy — **nhìn con số này để biết nó có nhận đúng file không**:
-
-```
-✓ DoAn     19 ảnh
-✓ DoUong    2 ảnh
-✓ Combo     6 ảnh
-✓ assets/js/gallery-data.js  (Đồ ăn: 19, Đồ uống: 2, Combo: 6)
-```
-
-**Bước 3 — xem thử rồi đẩy lên:**
-
-```bash
-python3 -m http.server 5173
-```
-
-Mở http://localhost:5173, bấm qua 3 tab kiểm tra. Ưng rồi thì:
+**Bước 2.** Đẩy lên GitHub:
 
 ```bash
 git add . && git commit -m "Cập nhật menu" && git push
 ```
 
-GitHub Pages tự cập nhật sau khoảng 1 phút. Nếu trình duyệt vẫn hiện ảnh cũ,
-bấm **Cmd + Shift + R** để tải lại bỏ qua cache.
+**Hết.** Không phải chạy `build.sh` nữa.
+
+GitHub sẽ tự nén ảnh, cập nhật danh sách rồi commit ngược lại. Trang web đổi theo sau
+khoảng **2–3 phút**. Nếu trình duyệt vẫn hiện ảnh cũ, bấm **Cmd + Shift + R**.
+
+### Không dùng dòng lệnh cũng được
+
+Không cần mở Terminal chút nào:
+
+1. Vào https://github.com/minhduc68m/xichbeer
+2. Bấm vào thư mục `DoAn` (hoặc `DoUong`, `Combo`)
+3. **Add file → Upload files**, kéo ảnh vào, bấm **Commit changes**
+4. Xoá ảnh cũ: bấm vào ảnh đó → biểu tượng thùng rác → **Commit changes**
+
+GitHub tự lo phần còn lại y hệt.
+
+### Theo dõi xem chạy xong chưa
+
+Vào tab **Actions** của repo. Dấu ✅ vàng đang quay là đang chạy, xanh là xong, đỏ là lỗi
+(bấm vào xem log để biết hỏng ở đâu).
+
+Nếu build hỏng giữa chừng, workflow **dừng lại và không commit gì cả** — trang web giữ
+nguyên ảnh cũ chứ không bị mất ảnh.
+
+### Vẫn muốn dựng ảnh trên máy
+
+Dùng khi cần xem thử trước lúc đẩy lên:
+
+```bash
+./build.sh
+```
+
+Script chỉ dùng `sips` + `python3` có sẵn của macOS, không cần cài gì. Máy có Node thì
+`npm run build` cho ảnh WebP nhẹ hơn — đây cũng chính là thứ GitHub chạy.
 
 ### Những điểm cần biết
 
@@ -129,7 +134,8 @@ bấm **Cmd + Shift + R** để tải lại bỏ qua cache.
 - **`build.sh` không bao giờ đụng vào `DoAn/`, `DoUong/`, `Combo/`, `Khac/`.** Nó chỉ ghi vào `assets/`. Ảnh gốc của anh an toàn.
 - **Ảnh gốc là thứ duy nhất không tái tạo được.** `assets/` luôn dựng lại được từ ảnh gốc, còn ảnh gốc mất là mất. Nên giữ một bản sao ở nơi khác trước khi dọn dẹp hàng loạt.
 - Nhóm nào hết sạch ảnh thì tab đó hiện dòng nhắn "chưa có ảnh menu" kèm số điện thoại, không để trống.
-- Đổi ảnh không gian quán hoặc logo: thay `Khac/khonggian.png` / `Khac/logo.png` rồi cũng chạy `./build.sh`.
+- Đổi ảnh không gian quán hoặc logo: thay `Khac/khonggian.png` / `Khac/logo.png` rồi đẩy lên, GitHub cũng tự dựng lại.
+- Bấm chạy lại bằng tay: tab **Actions** → **Dựng lại ảnh** → **Run workflow**.
 
 ---
 
@@ -139,8 +145,10 @@ bấm **Cmd + Shift + R** để tải lại bỏ qua cache.
 index.html              trang chính (ở thư mục gốc — GitHub Pages yêu cầu)
 README.md
 package.json
-build.sh                tạo ảnh nén + gallery-data.js  ← chạy cái này
-build.mjs               bản Node của build.sh (cần cài Node)
+build.sh                dựng ảnh trên máy macOS (tuỳ chọn, để xem thử)
+build.mjs               dựng ảnh bằng Node + sharp — GitHub chạy file này
+kiem-tra-anh.mjs        chặn commit nếu build hỏng
+.github/workflows/      GitHub tự dựng ảnh mỗi khi đẩy ảnh gốc lên
 serve.mjs               server xem thử tại chỗ
 .nojekyll               bắt buộc cho GitHub Pages
 
@@ -158,8 +166,8 @@ DoAn/ DoUong/ Combo/    ẢNH GỐC — nguồn để build, đừng xoá
 Khac/                   logo.png + khonggian.png
 ```
 
-`assets/img/` và `assets/js/gallery-data.js` được sinh ra từ ảnh gốc. Vẫn nên commit
-cả hai lên GitHub để trang chạy được ngay mà không cần ai chạy build.
+`assets/img/` và `assets/js/gallery-data.js` do GitHub tự sinh ra từ ảnh gốc mỗi khi
+anh đẩy ảnh mới lên. Đừng sửa tay hai chỗ đó — lần build sau sẽ ghi đè.
 
 ---
 
