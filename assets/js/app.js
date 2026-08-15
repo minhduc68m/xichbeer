@@ -149,7 +149,7 @@
     if (!group.items.length) {
       view.innerHTML =
         '<p class="rail__empty">Nhóm “' + group.label + '” chưa có ảnh menu. ' +
-        'Gọi <a href="tel:+842462722888">024.627.22.888</a> để hỏi món nhé.</p>';
+        'Quý khách vui lòng gọi <a href="tel:+842462722888">024.627.22.888</a> để hỏi món.</p>';
       updateRailNav();
       return;
     }
@@ -450,7 +450,7 @@
   var RULES = {
     name:   { el: '#f-name',   err: '#e-name',
               test: function (v) { return v.trim().length >= 2; },
-              msg: 'Cho quán xin tên với ạ (ít nhất 2 ký tự).' },
+              msg: 'Quý khách vui lòng cho biết tên (ít nhất 2 ký tự).' },
     tel:    { el: '#f-tel',    err: '#e-tel',
               test: function (v) { return /^[0-9+\s().-]{9,15}$/.test(v.trim()); },
               msg: 'Số điện thoại chưa đúng — nhập 9–15 chữ số.' },
@@ -662,7 +662,7 @@
       hienBanDuPhong(msg);
       copyText(msg)
         .then(function () { toast('Đã sao chép — bấm “Mở Messenger & dán”.'); })
-        .catch(function () { toast('Nội dung đặt bàn đã hiện bên dưới, Quý khách chép giúp nhé.'); });
+        .catch(function () { toast('Nội dung đặt bàn đã hiện bên dưới, Quý khách vui lòng sao chép lại.'); });
       return;
     }
 
@@ -682,7 +682,7 @@
         // Không bỏ rơi khách: vẫn cho họ đường gửi tay
         hienBanDuPhong(msg);
         copyText(msg).catch(function () {});
-        toast('Chưa gửi được tới quán — Quý khách gửi giúp qua Messenger hoặc gọi điện nhé.');
+        toast('Chưa gửi được tới quán — Quý khách vui lòng gửi qua Messenger hoặc gọi điện.');
         if (window.console) console.warn('Telegram:', err && err.message);
       })
       .then(function () {
@@ -694,6 +694,6 @@
   $('#bookCopy').addEventListener('click', function () {
     copyText($('#bookMsg').textContent)
       .then(function () { toast('Đã sao chép nội dung đặt bàn.'); })
-      .catch(function () { toast('Trình duyệt chặn sao chép — Quý khách bôi đen rồi copy tay nhé.'); });
+      .catch(function () { toast('Trình duyệt chặn sao chép — Quý khách vui lòng bôi đen rồi sao chép thủ công.'); });
   });
 })();
