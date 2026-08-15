@@ -508,25 +508,21 @@ a { color: var(--brass); text-decoration-color: rgba(248,153,56,.4); text-underl
   line-height: 1.25;
   height: 50px;                 /* height chứ không phải min-height — iOS mới tuân */
 }
-.field input[type="datetime-local"] {
-  -webkit-appearance: none; appearance: none;
-}
-/* iOS căn giữa phần giá trị ngày giờ và chèn lề riêng; kéo về cho khớp
-   với chữ placeholder của các ô còn lại */
-.field input[type="datetime-local"]::-webkit-date-and-time-value {
+/* iOS Safari dựng ô ngày bằng shadow DOM riêng, tự quyết chiều cao theo
+   nội dung bên trong và bỏ qua cả line-height lẫn min-height — ô Ngày sẽ
+   cao lệch hẳn so với các ô khác. Phải bỏ giao diện mặc định của hệ điều
+   hành thì nó mới nhận height 50px đã đặt ở .field input. */
+.field input[type="date"] { -webkit-appearance: none; appearance: none; }
+/* iOS căn giữa phần giá trị ngày và chèn lề riêng; kéo về căn trái cho
+   khớp với chữ trong các ô còn lại */
+.field input[type="date"]::-webkit-date-and-time-value {
   text-align: left; margin: 0; line-height: normal;
 }
-.field textarea { min-height: 72px; resize: vertical; }
-.field input::placeholder, .field textarea::placeholder { color: #6E675E; }
-.field input:hover, .field textarea:hover, .field select:hover { border-color: var(--steel-2); background: #1D1E21; }
-.field input:focus, .field textarea:focus, .field select:focus { border-color: var(--brass); background: #1D1E21; }
-.field input[aria-invalid="true"] { border-color: #E8663F; }
-/* color-scheme: dark khiến trình duyệt vẽ nút lịch màu TRẮNG. Bộ lọc cũ
-   được chỉnh theo nút màu ĐEN nên giờ sẽ ra xám đậm, chìm vào nền.
-   Để nguyên màu trắng của trình duyệt — luôn đọc được, không phụ thuộc
-   trình duyệt hay chủ đề sáng/tối. */
-.field input::-webkit-calendar-picker-indicator { opacity: .75; cursor: pointer; }
-.field input::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+/* Nút mở lịch — color-scheme: dark làm nó màu trắng, giữ nguyên cho dễ thấy */
+.field input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: .75; cursor: pointer;
+}
+.field input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
 
 /* Ô Giờ là <select>: bỏ mũi tên mặc định, vẽ mũi tên riêng cho hợp tông */
 .field select {
@@ -539,9 +535,10 @@ a { color: var(--brass); text-decoration-color: rgba(248,153,56,.4); text-underl
 }
 .field select:invalid { color: #6E675E; }   /* chưa chọn thì mờ như placeholder */
 
-/* Hàng 3 ô: Số người | Ngày | Giờ */
+/* Hàng 3 ô: Số người | Ngày | Giờ
+   Ba cột gần đều nhau: ô Ngày chỉ hiện dd/mm/yyyy nên không cần rộng. */
 @media (min-width: 720px) {
-  .field-row--3 { grid-template-columns: .85fr 1.1fr .95fr; }
+  .field-row--3 { grid-template-columns: .85fr 1.15fr 1fr; }
 }
 
 .hint { font-size: .8rem; color: var(--bone-dim); }

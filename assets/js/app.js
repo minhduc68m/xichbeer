@@ -44,15 +44,25 @@
      Trước đây dùng một ô datetime-local, nhưng Chrome chỉ có MỘT bộ
      chọn cho cả ô và nó là bảng lịch — bấm vào phần giờ vẫn bung ra
      bảng chọn ngày. Tách đôi thì mỗi ô có bộ chọn đúng việc của nó. */
+  /* form.reset() xoá sạch cả giá trị mặc định, nên tách ra hàm riêng để
+     gọi lại sau mỗi lần gửi xong — không thì khách kế tiếp thấy ô trống. */
+  function datNgayMacDinh() {
+    var oNgay = document.getElementById('f-date');
+    if (!oNgay) return;
+    var p2 = function (n) { return String(n).padStart(2, '0'); };
+    var h  = new Date();
+    var homNay = h.getFullYear() + '-' + p2(h.getMonth() + 1) + '-' + p2(h.getDate());
+    oNgay.value = homNay;      // mặc định hôm nay, khách khỏi phải chọn
+    oNgay.min   = homNay;      // không đặt bàn cho ngày đã qua
+  }
+
   (function dungONgayGio() {
     var oNgay = document.getElementById('f-date');
     var oGio  = document.getElementById('f-time');
     if (!oNgay || !oGio) return;
 
-    // Không cho đặt bàn cho ngày đã qua
-    var h = new Date();
+    datNgayMacDinh();
     var p2 = function (n) { return String(n).padStart(2, '0'); };
-    oNgay.min = h.getFullYear() + '-' + p2(h.getMonth() + 1) + '-' + p2(h.getDate());
 
     var phut = function (hhmm) {
       var t = hhmm.split(':');
@@ -717,6 +727,7 @@
         ok.focus();
         ok.scrollIntoView({ behavior: reduced.matches ? 'auto' : 'smooth', block: 'center' });
         form.reset();
+        datNgayMacDinh();          // reset() xoá cả ngày mặc định, đặt lại
         toast('Đã gửi đơn đặt bàn tới quán.');
       })
       .catch(function (err) {
