@@ -116,7 +116,12 @@
     <h1 id="hero-h" class="hero__h1">
       <img src="assets/img/logo-lg.png" width="1100" height="391" alt="XÍCH BEER" fetchpriority="high">
     </h1>
-    <p class="hero__tag">Bia lạnh tê tay, đồ nhắm nóng hổi — chỗ quen để anh em ngồi tới khuya giữa lòng Hà Nội.</p>
+    <!-- Tách 2 vế thành inline-block để trình duyệt ưu tiên ngắt dòng ở dấu phẩy,
+         giữ nguyên cấu trúc đối của câu. Màn hẹp thì từng vế tự xuống dòng tiếp. -->
+    <p class="hero__tag">
+      <span>Xích Beer – Đẳng cấp trong từng ly bia,</span>
+      <span>tinh tế trong từng món ăn</span>
+    </p>
     <div class="hero__cta">
       <a class="btn btn--brass" href="#datban">Đặt bàn ngay</a>
       <a class="btn btn--ghost" href="#menu">Xem menu</a>

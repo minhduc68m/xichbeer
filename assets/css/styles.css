@@ -255,11 +255,12 @@ a { color: var(--brass); text-decoration-color: rgba(248,153,56,.4); text-underl
   filter: drop-shadow(0 6px 32px rgba(0,0,0,.6));
 }
 .hero__tag {
-  margin: var(--s-3) auto 0; max-width: 34ch;
+  margin: var(--s-3) auto 0; max-width: 40ch;   /* đủ chỗ cho vế dài nằm trọn 1 dòng */
   font-size: clamp(1rem, 3.4vw, 1.2rem); line-height: 1.6;
   color: var(--bone); text-wrap: pretty;
   text-shadow: 0 2px 14px rgba(0,0,0,.7);
 }
+.hero__tag span { display: inline-block; }
 .hero__cta {
   margin-top: var(--s-4);
   display: flex; flex-wrap: wrap; gap: var(--s-2); justify-content: center;
