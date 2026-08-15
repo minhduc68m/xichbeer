@@ -87,11 +87,16 @@ Nhận `.webp`, `.jpg`, `.jpeg`, `.png`.
 > **Tên file quyết định thứ tự hiển thị** — trang sắp A→Z. Nên đặt `a01`, `a02`, `a03`…
 > Muốn chèn một trang vào giữa `a02` và `a03` thì đặt tên `a02b`.
 
-**Bước 2.** Đẩy lên GitHub:
+**Bước 2.** Trong Finder, **bấm đúp vào file `DANG-LEN-WEB.command`** ở thư mục dự án.
 
-```bash
-git add . && git commit -m "Cập nhật menu" && git push
-```
+Nó hiện ra danh sách những gì đã đổi, hỏi xác nhận, rồi tự đăng lên. Bấm Enter là xong.
+
+> Thích gõ lệnh hơn thì mở **Terminal** (Cmd + Space, gõ `Terminal`) và dán nguyên dòng này —
+> đã có sẵn `cd` nên dán ở đâu cũng chạy đúng:
+>
+> ```bash
+> cd "/Users/phamminhduc/Library/CloudStorage/OneDrive-Personal/01_Projects/Work/Xich_Page" && git add . && git commit -m "Cập nhật menu" && git push
+> ```
 
 **Hết.** Không phải chạy `build.sh` nữa.
 
@@ -145,6 +150,7 @@ Script chỉ dùng `sips` + `python3` có sẵn của macOS, không cần cài g
 index.html              trang chính (ở thư mục gốc — GitHub Pages yêu cầu)
 README.md
 package.json
+DANG-LEN-WEB.command    BẤM ĐÚP để đăng thay đổi lên web
 build.sh                dựng ảnh trên máy macOS (tuỳ chọn, để xem thử)
 build.mjs               dựng ảnh bằng Node + sharp — GitHub chạy file này
 kiem-tra-anh.mjs        chặn commit nếu build hỏng
