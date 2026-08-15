@@ -530,6 +530,9 @@ a { color: var(--brass); text-decoration-color: rgba(248,153,56,.4); text-underl
 @media (min-width: 760px) { .ft__in { grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: var(--s-3); } }
 .ft__brand img { width: auto; height: 30px; }
 .ft__brand p { color: var(--bone-dim); font-size: .9rem; margin-top: .8rem; max-width: 30ch; }
+/* Câu giới thiệu ở footer dài hơn dòng cũ — nới chỗ để vế đầu nằm trọn 1 dòng */
+.ft__tag { max-width: 40ch; }
+.ft__tag span { display: inline-block; }
 .ft__col h3 {
   font-size: .72rem; letter-spacing: .2em; text-transform: uppercase;
   color: var(--brass); margin-bottom: .8rem; font-weight: 700;
