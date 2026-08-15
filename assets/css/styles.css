@@ -330,13 +330,13 @@ a { color: var(--brass); text-decoration-color: rgba(248,153,56,.4); text-underl
 
 .card {
   flex: 0 0 auto; scroll-snap-align: start;
-  width: clamp(200px, 62vw, 268px);
+  width: clamp(250px, 76vw, 340px);   /* mobile gần trọn bề ngang, vẫn hé thẻ sau */
   border: 1px solid var(--steel); border-radius: var(--r-lg);
   background: var(--ink-3); overflow: hidden; position: relative;
   cursor: zoom-in; padding: 0; text-align: left; display: block;
   transition: transform var(--t) var(--ease), border-color var(--t) var(--ease), box-shadow var(--t) var(--ease);
 }
-@media (min-width: 700px) { .card { width: 268px; } }
+@media (min-width: 700px) { .card { width: 340px; } }
 .card__ph { aspect-ratio: 1500 / 2121; background: var(--ink-3); position: relative; overflow: hidden; }
 .card img {
   width: 100%; height: 100%; object-fit: cover;

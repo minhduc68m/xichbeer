@@ -34,7 +34,7 @@ const GROUPS = [
 ];
 
 const SIZES = {
-  thumb: { max: 640,  quality: 62 },   // thẻ trong thanh ngang
+  thumb: { max: 1000, quality: 45 },   // thẻ thanh ngang — đủ 2x cho thẻ 340px
   full:  { max: 1600, quality: 72 }    // lightbox (đủ nét để zoom)
 };
 

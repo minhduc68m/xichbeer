@@ -11,7 +11,8 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 
-THUMB_MAX=640;  THUMB_Q=62      # ảnh nhỏ trong thanh menu ngang
+THUMB_MAX=1000; THUMB_Q=45      # thẻ thanh menu: nhiều điểm ảnh + nén sâu hơn
+                                # cho ảnh nét hơn mà vẫn nhẹ hơn cách ngược lại
 FULL_MAX=1600;  FULL_Q=70       # ảnh to khi bấm vào xem (đủ nét để phóng)
 
 echo ""
