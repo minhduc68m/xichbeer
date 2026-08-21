@@ -3,7 +3,7 @@
 #
 #  Cứ đẩy ảnh mới vào DoAn / DoUong / Combo / Khac là GitHub tự nén
 #  ảnh, cập nhật danh sách, rồi commit ngược lại. Trang web tự đổi
-#  theo sau khoảng 1–2 phút. Không phải chạy build.sh trên máy nữa.
+#  theo sau khoảng 1–2 phút. Không phải chạy lệnh gì trên máy.
 # ═══════════════════════════════════════════════════════════════
 name: Dựng lại ảnh
 
