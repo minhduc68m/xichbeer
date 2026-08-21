@@ -13,17 +13,20 @@
 
   var CFG = {
     fbPage: 'xichbeer',              // facebook.com/<fbPage>
-    tel:    '+842462722888',
-    telText:'024.627.22.888',
+
+    /* Giờ mở cửa — sinh ra danh sách khung giờ trong ô "Giờ" của form đặt bàn.
+       Đổi ở đây là đổi luôn các mốc khách chọn được.
+       LƯU Ý: còn 2 nơi khác cũng ghi giờ mở cửa — bảng <ul id="hours"> và
+       khối JSON-LD trong index.html. Sửa cho khớp cả ba, nếu không
+       kiem-tra-thong-tin.mjs sẽ chặn không cho đẩy lên. */
+    moCua: '10:00', dongCua: '23:30', buocPhut: 30,
 
     /* ══════════════════════════════════════════════════════════════
        GỬI ĐƠN ĐẶT BÀN QUA TELEGRAM
 
-       Điền 2 dòng dưới đây là đơn tự chạy về Telegram của quán.
+       Điền 2 dòng cuối khối này là đơn tự chạy về Telegram của quán.
        Để trống thì trang vẫn chạy bình thường — nó quay về cách cũ:
        hiện nội dung đơn cho khách sao chép rồi gửi qua Messenger.
-
-       Cách lấy 2 giá trị này: xem mục 7 trong README.md
 
        ⚠ LƯU Ý AN TOÀN
        Token này nằm trong mã nguồn trang web công khai, ai xem cũng
@@ -32,13 +35,10 @@
        Nếu bị spam: vào BotFather gõ /revoke để lấy token mới, dán
        lại vào đây là xong.
        ══════════════════════════════════════════════════════════════ */
-    /* Giờ mở cửa — sinh ra danh sách khung giờ trong ô "Giờ".
-       Đổi ở đây là đổi luôn các mốc khách chọn được. */
-    moCua: '10:00', dongCua: '23:30', buocPhut: 30,
-
-    tgToken:  '8868532028:AAE9_NOg6FVoQIoPc0z28x6oJouQPKc86vs',                    // VD: '8123456789:AAF...'
-    tgChatId: '-5513063294'                     // VD: '-1002345678901' hoặc '123456789'
+    tgToken:  '8868532028:AAE9_NOg6FVoQIoPc0z28x6oJouQPKc86vs',
+    tgChatId: '-5513063294'
   };
+
 
   /* ─── Ô Ngày + Giờ ──────────────────────────────────────
      Trước đây dùng một ô datetime-local, nhưng Chrome chỉ có MỘT bộ

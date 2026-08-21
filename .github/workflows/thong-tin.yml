@@ -1,0 +1,37 @@
+# ═══════════════════════════════════════════════════════════════
+#  Canh gác thông tin quán
+#
+#  Số điện thoại, giờ mở cửa, email nằm rải rác chục chỗ trong
+#  index.html và app.js. Sửa sót một chỗ là khách gọi nhầm số hoặc
+#  đặt bàn vào giờ quán đóng cửa.
+#
+#  Workflow này chặn lại: chỉ cần một chỗ lệch là báo đỏ, và in ra
+#  đúng file:dòng của TẤT CẢ các chỗ để sửa cho khớp.
+#
+#  Nhẹ — không cài gói nào, chạy vài giây.
+# ═══════════════════════════════════════════════════════════════
+name: Soát thông tin quán
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'assets/js/app.js'
+      - 'kiem-tra-thong-tin.mjs'
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'assets/js/app.js'
+  workflow_dispatch:
+
+jobs:
+  soat:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Soát số điện thoại, giờ mở cửa, email
+        run: node kiem-tra-thong-tin.mjs
